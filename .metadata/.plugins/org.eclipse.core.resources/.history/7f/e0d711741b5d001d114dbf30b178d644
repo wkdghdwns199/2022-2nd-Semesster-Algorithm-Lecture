@@ -1,0 +1,105 @@
+package assignment;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.StringTokenizer;
+
+class VertexComparator implements Comparator<ArrayList<Integer>>{
+	public int compare(ArrayList<Integer> arr1, ArrayList<Integer> arr2){
+		return arr1.get(2) <= arr2.get(2) ? -1 : 1; 
+	}
+}
+
+public class Kruskal {
+	
+	public static void main(String[] args) throws IOException {
+		
+		BufferedReader scan = new BufferedReader(new InputStreamReader(System.in)); // 입력 기능 객체
+		ArrayList<ArrayList<Integer>> routeMap = new ArrayList<>(); // 루트 및 가중치 저장 배열
+		
+		StringTokenizer st = null;
+		st = new StringTokenizer(scan.readLine());
+		int node = Integer.parseInt(st.nextToken()); // 노드 수 입력
+		int edge = Integer.parseInt(st.nextToken()); // 에지 수 입력
+		
+		
+		//에지 수 만큼 입력
+		for (int i=0; i<edge; i++) {
+			// 루트 및 가중치 한 줄 저장 배열
+			ArrayList<Integer> route = new ArrayList<>();
+			
+			// 시작 노드 ,끝 노드, 가중치 입력
+			st = new StringTokenizer(scan.readLine());
+			for (int j=0; j<3; j++) {
+				route.add(Integer.parseInt(st.nextToken()));
+			}
+			
+			// 루트 가중치 한 줄 저장
+			routeMap.add(route);
+			
+		}
+		
+		// 루트들 정렬
+		Collections.sort(routeMap, new VertexComparator());
+	
+		for (int i=0; i<routeMap.size(); i++) {
+			System.out.println(routeMap.get(i));
+		}
+		
+		// 순회를 체크하는 배열
+		int[] checkIfCycle = new int[node+1];
+		
+		// 순회 체크하는 배열 초기화
+		for (int i=0; i<node+1; i++) {
+			checkIfCycle[i]=-1;
+		}
+		
+		
+		int mstSum=0;
+		for (int i=0; i<routeMap.size(); i++) {
+			
+			// 둘 다 -1 일 때
+			if (checkIfCycle[routeMap.get(i).get(0)] == -1 && checkIfCycle[routeMap.get(i).get(1)] == -1) {
+				
+				checkIfCycle[routeMap.get(i).get(0)] = routeMap.get(i).get(0);
+				checkIfCycle[routeMap.get(i).get(1)] = routeMap.get(i).get(0);
+				mstSum += routeMap.get(i).get(2);
+			}
+			
+			
+			else{
+				// 만약 시작 노드가 아직 순환 체크가 안 되었거나, 순환이 안 될 때만 
+				if (checkIfCycle[routeMap.get(i).get(0)] == -1) {
+					mstSum += routeMap.get(i).get(2);
+					checkIfCycle[routeMap.get(i).get(0)] = checkIfCycle[routeMap.get(i).get(1)]; 
+				}
+				else if (checkIfCycle[routeMap.get(i).get(1)] == -1) {
+					mstSum += routeMap.get(i).get(2);
+					checkIfCycle[routeMap.get(i).get(1)] = checkIfCycle[routeMap.get(i).get(0)]; 
+				}
+						
+				else if (checkIfCycle[routeMap.get(i).get(0)] != checkIfCycle[routeMap.get(i).get(1)]) {
+					mstSum += routeMap.get(i).get(2);
+					for (int j=0; j<node+1; j++) {
+						if (checkIfCycle[j] == routeMap.get(i).get(1)) {
+							checkIfCycle[j] = routeMap.get(i).get(0);
+						}
+					}
+				}
+			}
+			
+		}
+		
+		for (int i=0; i<node+1; i++) {
+			System.out.print(checkIfCycle[i] + " ");
+		}
+		
+		System.out.println(mstSum);
+		
+	}
+
+}
