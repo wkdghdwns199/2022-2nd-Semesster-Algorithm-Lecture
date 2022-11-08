@@ -4,105 +4,118 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.StringTokenizer;
-
-class StartComparator implements Comparator<ArrayList<Integer>>{
-	@Override
-	public int compare(ArrayList<Integer> arr1, ArrayList<Integer> arr2) {
-		if ( arr1.get(0) < arr2.get(0) ) return -1;
-		else if (arr1.get(0) == arr2.get(0)) {
-			return arr1.get(2) <= arr2.get(2) ?  -1:1;
-		}
-		else return 1;
-				
-	}
-}
 
 public class Prim{
 	public static void main(String[] args) throws IOException {
+		HashMap<Integer, ArrayList<HashMap<Integer, Integer>>> routeMap = new HashMap<>();
 		BufferedReader scan = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = null;
-		ArrayList<ArrayList<Integer>> array = new ArrayList<>();
 		
-		st = new StringTokenizer(scan.readLine());
-		int n = Integer.parseInt(st.nextToken());
-		int m = Integer.parseInt(st.nextToken());
+		StringTokenizer token ;
+		token = new StringTokenizer(scan.readLine());
+		int n = Integer.parseInt(token.nextToken());
+		int m = Integer.parseInt(token.nextToken());
 		
-		for (int i=0; i<m; i++) {
-			ArrayList<Integer> temp = new ArrayList<>();
-			st = new StringTokenizer(scan.readLine());
-			while (st.hasMoreTokens()) {
-				temp.add(Integer.parseInt(st.nextToken()));
-			}
-			array.add(temp);
-		}
-		
-		Collections.sort(array, new StartComparator());
-		
+		ArrayList<Integer> checkIfMade = new ArrayList<>(); 
 		ArrayList<Integer> groupOfNode = new ArrayList<>();
-		groupOfNode.add(array.get(0).get(0));
-		ArrayList<Integer> edgeCheck =new ArrayList<>();
-		int mstValue=0;
 		
 		for (int i=0; i<n+1; i++) {
-			edgeCheck.add(0);
+			checkIfMade.add(0);
 		}
+		checkIfMade.set(0, 1);
 		
-		while (edgeCheck.contains(0)) {
-			
-			int tempMin=0;
-			int tempNodeStart = 0;
-			int tempNodeEnd = 0;
-			int tempIndex=-1;
-			
-			for (int x : groupOfNode) {
-				int i=0;
-				for (i=0; i<array.size(); i++) {
-					if ((array.get(i).get(0) == x || array.get(i).get(1) == x)) { 
-						if (!groupOfNode.contains(array.get(i).get(1)) || !groupOfNode.contains(array.get(i).get(0))) {
-							if ((array.get(i).get(2) < tempMin || tempMin==0)){
-								tempMin = array.get(i).get(2);
-								tempNodeStart = array.get(i).get(0);
-								tempNodeEnd = array.get(i).get(1);
-								tempIndex = i;
-							}
-						}
-						
-						}
-					}
-				}
+		for (int i=0; i<m; i++) {
+			token = new StringTokenizer(scan.readLine());
+			HashMap<Integer, Integer> temp = new HashMap<>();
+			ArrayList<HashMap<Integer, Integer>> tempArr;
+			String key = token.nextToken();
+			if (groupOfNode.isEmpty()) {
+				groupOfNode.add(Integer.parseInt(key));
+				checkIfMade.set(Integer.parseInt(key),1);
+			}
+			temp.put(Integer.parseInt(token.nextToken()), Integer.parseInt(token.nextToken()));
 			
 			
-			if (tempIndex != -1) {
-				
-				mstValue += tempMin;
-				System.out.println(tempNodeStart + " " + tempNodeEnd + " " + tempMin);
-				if (!groupOfNode.contains(tempNodeStart)) {
-					groupOfNode.add(tempNodeStart);
-				}
-				if (!groupOfNode.contains(tempNodeEnd)) {
-					groupOfNode.add(tempNodeEnd);
-				}
-				
-
-				
-//				for (int i=0; i<array.size(); i++) {
-//					
-//					if (array.get(i).get(0) == tempStart && array.get(i).get(1) == tempEnd) {
-//						//System.out.print("!");
-//						//System.out.println(array.get(i));
-//						array.remove(i);
-//						if (i!=0) i--;
-//					}
-//				}
-//				System.out.println("---------------------");
+			if (routeMap.containsKey(Integer.parseInt(key))) {
+				tempArr = routeMap.get(Integer.parseInt(key));
+			}
+			else {
+				tempArr = new ArrayList<>();
 			}
 			
-			//System.out.println(groupOfNode);
+			tempArr.add(temp);
+			
+			routeMap.put(Integer.parseInt(key),tempArr);
 		}
 		
-		System.out.println(mstValue);
+//		for (int x : routeMap.keySet()) {
+//			System.out.println(x + " " + routeMap.get(x));
+//		}
+		
+		int mstMinValue=0;
+		
+		while (checkIfMade.contains(0)) {
+			//System.out.println(groupOfNode);
+			int minValue=0;
+			int minValueKey =0;
+			
+			
+			
+			for (int x : groupOfNode) {
+				//System.out.println("!" + x);
+				if (routeMap.keySet().contains(x)) {
+					for (HashMap<Integer, Integer> vertex : routeMap.get(x)) {
+						for (int key : vertex.keySet()) {
+							if ((minValue == 0 || minValue > vertex.get(key)) && !groupOfNode.contains(key)){
+								//System.out.println(x + " -> " + key + " : " + vertex.get(key));
+								minValue = vertex.get(key);
+								minValueKey=key;
+							}
+						}
+					}
+					
+				}
+				
+//				for (int key : routeMap.keySet()) {
+//					//System.out.println(x + " vs " + key);
+//					if (!groupOfNode.contains(key)) {
+//						//System.out.println(routeMap.get(key));
+//						for (HashMap<Integer, Integer> vertex : routeMap.get(key)) {
+//							for (int keyInner : vertex.keySet()) {
+//								//System.out.println(keyInner);
+//								if (keyInner == x ){
+//									
+//									if ((minValue == 0 || minValue > vertex.get(keyInner))) {
+//										//System.out.println(minValue +  "vsvs" + vertex.get(keyInner));
+//										//System.out.println("*"+keyInner + " -> " + key + " : " + vertex.get(keyInner));
+//									//System.out.println("!!!" + keyInner);
+//										minValue = vertex.get(keyInner);
+//										minValueKey=key;
+//									}
+//										
+//								}
+//							}
+//						}
+//
+//					}
+//				}
+			}
+			
+				//System.out.println(minValueKey);
+				mstMinValue+=minValue;
+				//System.out.println("!!" + minValueKey);
+				
+				checkIfMade.set(minValueKey, 1);
+				if (!groupOfNode.contains(minValueKey) && minValueKey!=0) {
+					groupOfNode.add(minValueKey);
+				}
+			
+			
+			//System.out.println(checkIfMade);
+		}
+		
+		System.out.println(mstMinValue);
+		
 	}
 }
