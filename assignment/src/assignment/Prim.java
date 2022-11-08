@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+
+
 public class Prim{
 	public static void main(String[] args) throws IOException {
 		HashMap<Integer, ArrayList<HashMap<Integer, Integer>>> routeMap = new HashMap<>();
@@ -24,7 +26,8 @@ public class Prim{
 		}
 		checkIfMade.set(0, 1);
 		
-		int startNode =0;
+		int startNode = 0;
+		checkIfMade.set(startNode, 1);
 		
 		for (int i=0; i<m; i++) {
 			token = new StringTokenizer(scan.readLine());
@@ -34,10 +37,11 @@ public class Prim{
 			ArrayList<HashMap<Integer, Integer>> tempArr2;
 			String key = token.nextToken();
 			
-			if (startNode == 0) {
-				startNode = Integer.parseInt(key);
-				checkIfMade.set(startNode, 1);
-			}
+//			if (startNode == 0) {
+//				startNode = Integer.parseInt(key);
+//				checkIfMade.set(startNode, 1);
+//				nextNode =1;
+//			}
 			
 			int endNode = Integer.parseInt(token.nextToken());
 			int vertexValue = Integer.parseInt(token.nextToken());
@@ -67,21 +71,32 @@ public class Prim{
 			routeMap.put(endNode,tempArr2);
 		}
 		
-		System.out.println(startNode);
-//		for (int x : routeMap.keySet()) {
-//			System.out.println(x + " " + routeMap.get(x));
+		
+		//token = new StringTokenizer(scan.readLine());
+		//int w  = Integer.parseInt(token.nextToken());
+		
+		startNode=1;
+		checkIfMade.set(startNode, 1);
+		
+		//System.out.println(startNode);
+		
+//		for (int i=1; i<n+1; i++) {
+//			System.out.println(i + " " + routeMap.get(i));
 //		}
+		
+		
 		
 		int mstMinValue=0;
 		
 		while (checkIfMade.contains(0)) {
-			//System.out.println(groupOfNode);
-			int minValue=0;
+
+			int minValue=Integer.MAX_VALUE;
 			int minValueKey = 0;
 			
 			for (HashMap<Integer, Integer> vertex : routeMap.get(startNode)) {
+				
 				for (int key : vertex.keySet()) {
-					if ((minValue == 0 || minValue > vertex.get(key)) && checkIfMade.get(key) == 0){
+					if ((minValue > vertex.get(key)) && checkIfMade.get(key) == 0){
 						minValue = vertex.get(key);
 						minValueKey=key;
 					}
@@ -90,7 +105,22 @@ public class Prim{
 			
 			mstMinValue+=minValue;
 			checkIfMade.set(minValueKey, 1);
-			System.out.println(minValueKey+ " " + mstMinValue + " " + minValue);
+			//System.out.println(minValueKey+ " " + mstMinValue + " " + minValue);
+//			for (int i=0; i<routeMap.get(startNode).size(); i++) {
+//				if (routeMap.get(startNode).get(i).entrySet().iterator().next().getKey() == minValueKey) {
+//					routeMap.get(startNode).remove(i);
+//					i--;
+//				}
+//			}
+//			System.out.println("!" + minValueKey);
+//			System.out.println(routeMap.get(minValueKey).size());
+//			for (int i=0; i<routeMap.get(minValueKey).size(); i++) {
+//				if (routeMap.get(minValueKey).get(i).entrySet().iterator().next().getKey() == nextNode) {
+//					routeMap.get(minValueKey).remove(i);
+//					i--;
+//				}
+//			}
+//			System.out.println(minValueKey);
 			for (HashMap<Integer, Integer> temp : routeMap.get(minValueKey)) {
 				routeMap.get(startNode).add(temp);
 			}
@@ -152,6 +182,9 @@ public class Prim{
 //			System.out.println(minValueKey);	
 //			System.out.println(checkIfMade);
 //			System.out.println(routeMap.get(minValueKey));
+			
+			//System.out.println(mstMinValue + " " + minValue);
+			
 		}
 		
 		System.out.println(mstMinValue);
