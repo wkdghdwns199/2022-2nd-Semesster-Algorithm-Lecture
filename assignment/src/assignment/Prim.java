@@ -94,7 +94,6 @@ public class Prim{
 			int minValueKey = 0;
 			
 			for (HashMap<Integer, Integer> vertex : routeMap.get(startNode)) {
-				
 				for (int key : vertex.keySet()) {
 					if ((minValue > vertex.get(key)) && checkIfMade.get(key) == 0){
 						minValue = vertex.get(key);

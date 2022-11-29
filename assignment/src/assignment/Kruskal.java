@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
@@ -61,48 +62,61 @@ public class Kruskal {
 		checkIfMade.set(0,1);
 		int mstSum=0;
 		
-		int i=0;
-		while(checkIfMade.contains(0)) {
+		
+		for (int i=0; i<routeMap.size(); i++) {
 			
-			
-			if (checkIfCycle[routeMap.get(i).get(0)] == -1 && checkIfCycle[routeMap.get(i).get(1)] == -1) {
-				checkIfCycle[routeMap.get(i).get(0)] = routeMap.get(i).get(0);
-				checkIfCycle[routeMap.get(i).get(1)] = routeMap.get(i).get(0);
-				
-				checkIfMade.set(routeMap.get(i).get(0), 1);
-				checkIfMade.set(routeMap.get(i).get(1), 1);
-				
-				mstSum += routeMap.get(i).get(2);
-			}
-			else if (checkIfCycle[routeMap.get(i).get(0)] == -1 && checkIfCycle[routeMap.get(i).get(1)] != -1){
-				checkIfCycle[routeMap.get(i).get(0)] = checkIfCycle[routeMap.get(i).get(1)];
-				checkIfMade.set(routeMap.get(i).get(0), 1);
-				mstSum += routeMap.get(i).get(2);
-			}
-			else if (checkIfCycle[routeMap.get(i).get(1)] == -1 && checkIfCycle[routeMap.get(i).get(0)] != -1) {
-				checkIfCycle[routeMap.get(i).get(1)] = checkIfCycle[routeMap.get(i).get(0)];
-				checkIfMade.set(routeMap.get(i).get(1), 1);
-				mstSum += routeMap.get(i).get(2);
-			}	
-			else {
-				if (checkIfCycle[routeMap.get(i).get(0)] != checkIfCycle[routeMap.get(i).get(1)]) {
+			if (checkIfCycle[routeMap.get(i).get(0)] == checkIfCycle[routeMap.get(i).get(1)]) {
+				if (checkIfCycle[routeMap.get(i).get(0)] == -1 && checkIfCycle[routeMap.get(i).get(1)] == -1) {
+					checkIfCycle[routeMap.get(i).get(0)] = routeMap.get(i).get(0);
+					checkIfCycle[routeMap.get(i).get(1)] = routeMap.get(i).get(0);
+					
+					checkIfMade.set(routeMap.get(i).get(0), 1);
+					checkIfMade.set(routeMap.get(i).get(1), 1);
+					
 					mstSum += routeMap.get(i).get(2);
-					for (int j=0; j<node+1; j++) {
-						if (checkIfCycle[j] == checkIfCycle[routeMap.get(i).get(1)]) {
-							checkIfCycle[j] = checkIfCycle[routeMap.get(i).get(0)];
+					//System.out.println("1. " + routeMap.get(i).get(0) + "->" + routeMap.get(i).get(1) + " " + routeMap.get(i).get(2)+ " " + i + " " +mstSum);
+				}
+			}
+			else {
+				
+				if (checkIfCycle[routeMap.get(i).get(0)] == -1 && checkIfCycle[routeMap.get(i).get(1)] != -1){
+					checkIfCycle[routeMap.get(i).get(0)] = checkIfCycle[routeMap.get(i).get(1)];
+					checkIfMade.set(routeMap.get(i).get(0), 1);
+					mstSum += routeMap.get(i).get(2);
+					//System.out.println("2. " + routeMap.get(i).get(0) + "->" + routeMap.get(i).get(1) + " " + routeMap.get(i).get(2)+ " " + i+" " +mstSum);
+				}
+				else if (checkIfCycle[routeMap.get(i).get(1)] == -1 && checkIfCycle[routeMap.get(i).get(0)] != -1) {
+					checkIfCycle[routeMap.get(i).get(1)] = checkIfCycle[routeMap.get(i).get(0)];
+					checkIfMade.set(routeMap.get(i).get(1), 1);
+					mstSum += routeMap.get(i).get(2);
+					//System.out.println("3. " + routeMap.get(i).get(0) + "->" + routeMap.get(i).get(1) + " " + routeMap.get(i).get(2)+ " " + i+" " +mstSum);
+				}	
+				else if (checkIfCycle[routeMap.get(i).get(1)] != -1 && checkIfCycle[routeMap.get(i).get(0)] != -1){	
+					
+					if (checkIfCycle[routeMap.get(i).get(0)] != checkIfCycle[routeMap.get(i).get(1)]) {
+						//System.out.println(checkIfCycle[routeMap.get(i).get(0)] +" " + checkIfCycle[routeMap.get(i).get(1)]);
+						mstSum += routeMap.get(i).get(2);
+						//System.out.println("4. " + routeMap.get(i).get(0) + "->" + routeMap.get(i).get(1) + " " + routeMap.get(i).get(2)+ " " + i+ " " +mstSum);
+						int[] temp = Arrays.copyOf(checkIfCycle, node+1);
+						for (int j=0; j<node+1; j++) {
+							//System.out.print(checkIfCycle[j] + "->" + checkIfCycle[routeMap.get(i).get(0)]);
+							if (temp[j] == checkIfCycle[routeMap.get(i).get(0)]) {
+								temp[j] = checkIfCycle[routeMap.get(i).get(1)];
+							}
+							//System.out.println(checkIfCycle[j]);
 						}
+						checkIfCycle = Arrays.copyOf(temp, node+1);
 					}
 				}
 			}
 			
-
-			i++;
 		}
 
-		for (int j=0; j<node+1; j++) {
-		System.out.print(checkIfCycle[j] + " ");
-	}
-	System.out.println();
+//		for (int j=0; j<node+1; j++) {
+//			System.out.print(checkIfCycle[j] + " ");
+//		}
+//		System.out.println(checkIfMade);
+//		System.out.println();
 		System.out.println(mstSum);
 		
 	}
